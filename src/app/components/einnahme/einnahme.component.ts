@@ -17,11 +17,17 @@ export class EinnahmeComponent implements OnInit {
 
   form: FormGroup;
 
+  //new properties for pagination
+  pageNumber: number = 1;
+  pageSize: number = 5;
+  totalElements: number = 0;
+  previousKeyword: string | null = null;
+
   constructor(private einnahmeService: EinnahmeService,
     private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
-    this.getEinnahmen();
+    this.getEinnahmenPaginate();
 
     this.form = this.formBuilder.group({
       dateRange: new FormGroup({
@@ -31,8 +37,8 @@ export class EinnahmeComponent implements OnInit {
     });
   }
 
-  public getEinnahmen(): void {
-    this.einnahmeService.getEinnahmen().subscribe({
+  public getEinnahmenPaginate(): void {
+    this.einnahmeService.getEinnahmenPaginate(this.pageNumber - 1, this.pageSize).subscribe({
       next: (einnahmenData: Einnahme[]) => {
         this.einnahmen = einnahmenData;
       },
@@ -71,7 +77,7 @@ export class EinnahmeComponent implements OnInit {
     this.einnahmeService.addEinnahmen(addForm.value).subscribe({
       next: (response: Einnahme) => {
         console.log(response);
-        this.getEinnahmen();
+        this.getEinnahmenPaginate();
         addForm.reset();
       },
       error: (error: HttpErrorResponse) => {
@@ -84,7 +90,7 @@ export class EinnahmeComponent implements OnInit {
     this.einnahmeService.updateEinnahme(einnahme).subscribe({
       next: (response: Einnahme) => {
         console.log(response);
-        this.getEinnahmen();
+        this.getEinnahmenPaginate();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
@@ -96,7 +102,7 @@ export class EinnahmeComponent implements OnInit {
     this.einnahmeService.deleteEinnahme(einnahmeId).subscribe({
       next: (response: void) => {
         console.log(response);
-        this.getEinnahmen();
+        this.getEinnahmenPaginate();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
@@ -113,8 +119,8 @@ export class EinnahmeComponent implements OnInit {
     }
 
     this.einnahmen = results;
-    if (results.length === 0 || !key) {
-      this.getEinnahmen();
+    if (!key) {
+      this.getEinnahmenPaginate();
     }
   }
 
@@ -138,8 +144,15 @@ export class EinnahmeComponent implements OnInit {
   }
 
   public onCancel(){
-    this.getEinnahmen();
+    this.getEinnahmenPaginate();
     this.form.reset();
+  }
+
+  // pagination
+  updatePageSize(pageSize: number){
+    this.pageSize = pageSize;
+    this.pageNumber = 1;
+    this.getEinnahmenPaginate();
   }
 }
 

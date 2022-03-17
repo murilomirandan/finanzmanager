@@ -17,6 +17,11 @@ export class EinnahmeService {
     return this.httpClient.get<Einnahme[]>(this.apiServiceUrl);
   }
 
+  public getEinnahmenPaginate(page: number, pageSize:number): Observable<Einnahme[]>{
+    const searchUrl = `${this.apiServiceUrl}?pageNo=${page}&pageSize=${pageSize}`;
+    return this.httpClient.get<Einnahme[]>(searchUrl);
+  }
+
   public getEinnahme(einnahmeId: number): Observable<Einnahme>{
     return this.httpClient.get<Einnahme>(`${this.apiServiceUrl}/${einnahmeId}`);
   }

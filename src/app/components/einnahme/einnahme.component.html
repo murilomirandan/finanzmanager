@@ -14,55 +14,98 @@
       <div class="col-3 p-3">
         <!-- <input type="date" class="form-control" /> -->
         <form [formGroup]="form">
-        <mat-form-field appearance="fill">
-          <mat-label>Choose Date Range</mat-label>
-          <mat-date-range-input
-            [rangePicker]="picker"
-            formGroupName="dateRange"
-          >
-            <input matStartDate formControlName="start" placeholder="Start Date">
-            <input matEndDate formControlName="end" placeholder="End Date">
-          </mat-date-range-input>
+          <mat-form-field appearance="fill">
+            <mat-label>Choose Date Range</mat-label>
+            <mat-date-range-input
+              [rangePicker]="picker"
+              formGroupName="dateRange"
+            >
+              <input matStartDate formControlName="start" placeholder="Start Date">
+              <input matEndDate formControlName="end" placeholder="End Date">
+            </mat-date-range-input>
 
-          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-          <mat-date-range-picker #picker>
-            <mat-date-range-picker-actions>
-              <button (click)="onCancel()" mat-button matDateRangePickerCancel>Cancel</button>
-              <button (click)="searchZwischenDaten()" mat-raised-button color="primary" matDateRangePickerApply>Apply</button>
-            </mat-date-range-picker-actions>
-          </mat-date-range-picker>
-        </mat-form-field>
-        <!-- <h2>
-          Start: {{dateRange.value.start | date}}
-          End: {{dateRange.value.end | date}}
-        </h2> -->
-      </form>
+            <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-date-range-picker #picker>
+              <mat-date-range-picker-actions>
+                <button (click)="onCancel()" mat-button matDateRangePickerCancel>Cancel</button>
+                <button (click)="searchZwischenDaten()" mat-raised-button color="primary" matDateRangePickerApply>Apply</button>
+              </mat-date-range-picker-actions>
+            </mat-date-range-picker>
+          </mat-form-field>
+        </form>
       </div>
     </div>
   </div>
 
-  <div class="table-responsive">
-    <table class="table table-striped">
-      <thead class="table-light">
-        <tr>
-          <th>Beschreibung</th>
-          <th>Wert</th>
-          <th>Datum</th>
-          <th class="text-center">Handlung</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr *ngFor="let einnahme of einnahmen">
-          <td>{{ einnahme?.beschreibung }}</td>
-          <td>{{ einnahme?.wert | currency: "EUR" }}</td>
-          <td>{{ einnahme?.datum | date: "dd-MM-yyyy" }}</td>
-          <td class="text-center">
-            <a (click)="onOpenModal(einnahme, 'update')" class="btn btn-secondary tooltips" data-bs-placement="top" data-bs-original-title="Bearbeiten">Bearbeiten</a> |
-            <a (click)="onOpenModal(einnahme, 'delete')" class="btn btn-danger tooltips" data-bs-placement="top" data-bs-original-title="Löschen">Löschen</a>
-          </td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="container-fluid">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead class="table-light">
+          <tr>
+            <th>Beschreibung</th>
+            <th>Wert</th>
+            <th>Datum</th>
+            <th class="text-center">Handlung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let einnahme of einnahmen">
+            <td>{{ einnahme?.beschreibung }}</td>
+            <td>{{ einnahme?.wert | currency: "EUR" }}</td>
+            <td>{{ einnahme?.datum | date: "dd-MM-yyyy" }}</td>
+            <td class="text-center">
+              <a (click)="onOpenModal(einnahme, 'update')" class="btn btn-secondary tooltips" data-bs-placement="top" data-bs-original-title="Bearbeiten">Bearbeiten</a> |
+              <a (click)="onOpenModal(einnahme, 'delete')" class="btn btn-danger tooltips" data-bs-placement="top" data-bs-original-title="Löschen">Löschen</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- if products empty then display a message -->
+    <div *ngIf="einnahmen?.length == 0" class="alert alert-warning col-md-12" role="alert">
+      Keine Einnahmen gefunden.
+    </div>
+
+    <!-- begin pagination -->
+    <div class="footer-pagination">
+      <div class="row">
+        <div class="col-md-5"> </div>
+
+        <div class="col-md-7">
+          <div class="row">
+            <div class="col-md-9" style="padding-left: 15%">
+
+              <ngb-pagination
+                [(page)]="pageNumber"
+                [pageSize]="pageSize"
+                [collectionSize]="totalElements"
+                [maxSize]="2"
+                [boundaryLinks]="true"
+                (pageChange)="getEinnahmenPaginate()">
+
+              </ngb-pagination>
+
+            </div>
+
+            <!--  -->
+            <div class="col-md-3 mt-2" style="text-align: right;">
+              <span class="mr-2">Page Size </span>
+
+              <select #mySelect (change)="updatePageSize(+mySelect.value)">
+                <option>2</option>
+                <option selected="true">5</option>
+                <option>10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+            </div>
+            <!--  -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end pagination -->
   </div>
 </div>
 
@@ -150,12 +193,4 @@
         </div>
      </div>
   </div>
-</div>
-
-<!-- Notification for no einnahmen -->
-<div *ngIf="einnahmen?.length == 0" class="col-lg-12 col-md-12 col-xl-12">
-<div class="alert alert-info" role="alert">
-  <h4 class="alert-heading">NO EINNAHMEN!</h4>
-  <p>No Einnahmen were found.</p>
-</div>
 </div>

@@ -8,9 +8,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatNativeDateModule } from '@angular/material/core';
 
+
 import { AppComponent } from './app.component';
 import { EinnahmeComponent } from './components/einnahme/einnahme.component';
 import { EinnahmeService } from './services/einnahme.service';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 
 @NgModule({
   declarations: [
@@ -26,6 +28,7 @@ import { EinnahmeService } from './services/einnahme.service';
     MatDatepickerModule,
     MatFormFieldModule,
     MatNativeDateModule,
+    NgbModule,
   ],
   providers: [EinnahmeService],
   bootstrap: [AppComponent]
