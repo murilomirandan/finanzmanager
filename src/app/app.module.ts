@@ -13,11 +13,13 @@ import { AppComponent } from './app.component';
 import { EinnahmeComponent } from './components/einnahme/einnahme.component';
 import { EinnahmeService } from './services/einnahme.service';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { HomeComponent } from './components/home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    EinnahmeComponent
+    EinnahmeComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
