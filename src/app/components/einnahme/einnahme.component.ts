@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, NgForm } from '@angular/forms';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { ActivatedRoute } from '@angular/router';
 import { Einnahme } from 'src/app/common/einnahme';
 import { EinnahmeService } from 'src/app/services/einnahme.service';
 
@@ -11,6 +12,8 @@ import { EinnahmeService } from 'src/app/services/einnahme.service';
   styleUrls: ['./einnahme.component.css']
 })
 export class EinnahmeComponent implements OnInit {
+  tableName: 'einnahmen';
+
   einnahmen: Einnahme[];
   einnahmeInModal: Einnahme;
   emptyEinnahme = new Einnahme();
@@ -24,7 +27,8 @@ export class EinnahmeComponent implements OnInit {
   previousKeyword: string | null = null;
 
   constructor(private einnahmeService: EinnahmeService,
-    private formBuilder: FormBuilder) { }
+    private formBuilder: FormBuilder,
+    private route: ActivatedRoute) { }
 
   ngOnInit(): void {
     this.getEinnahmenPaginate();
@@ -108,20 +112,6 @@ export class EinnahmeComponent implements OnInit {
         alert(error.message);
       }
     });
-  }
-
-  public searchEinnahmen(key: string): void {
-    const results: Einnahme[] = [];
-    for (const einnahme of this.einnahmen) {
-      if (einnahme.beschreibung.toLowerCase().indexOf(key.toLowerCase()) !== -1) {
-        results.push(einnahme);
-      }
-    }
-
-    this.einnahmen = results;
-    if (!key) {
-      this.getEinnahmenPaginate();
-    }
   }
 
   public searchZwischenDaten(): void {

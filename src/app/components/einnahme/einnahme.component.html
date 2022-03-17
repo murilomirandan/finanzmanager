@@ -7,11 +7,8 @@
           neue Einnahmen
         </button>
       </div>
-      <div class="col-6 p-3">
-        <input type="search" (ngModelChange)="searchEinnahmen(key.value)" #key="ngModel" ngModel
-        name="key" id="searchName" class="form-control" placeholder="Search Einnahmen..." aria-label="Search"/>
-      </div>
-      <div class="col-3 p-3">
+      <app-search class="col-5 p-3" [table]="tableName"></app-search>
+      <div class="col-4 p-3">
         <!-- <input type="date" class="form-control" /> -->
         <form [formGroup]="form">
           <mat-form-field appearance="fill">
