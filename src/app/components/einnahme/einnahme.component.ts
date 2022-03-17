@@ -12,7 +12,7 @@ import { EinnahmeService } from 'src/app/services/einnahme.service';
   styleUrls: ['./einnahme.component.css']
 })
 export class EinnahmeComponent implements OnInit {
-  tableName: 'einnahmen';
+  className: 'einnahmen';
 
   einnahmen: Einnahme[];
   einnahmeInModal: Einnahme;
@@ -25,6 +25,9 @@ export class EinnahmeComponent implements OnInit {
   pageSize: number = 5;
   totalElements: number = 0;
   previousKeyword: string | null = null;
+
+  //search properties
+  searchMode: boolean;
 
   constructor(private einnahmeService: EinnahmeService,
     private formBuilder: FormBuilder,
@@ -42,6 +45,28 @@ export class EinnahmeComponent implements OnInit {
   }
 
   public getEinnahmenPaginate(): void {
+    this.searchMode = this.route.snapshot.paramMap.has('keyword');
+    if(this.searchMode){
+      this.handleSearchEinnahmen();
+    }else{
+      this.handleListEinnahmen();
+    }
+  }
+
+  handleSearchEinnahmen() {
+    const keyword: string = this.route.snapshot.paramMap.get('keyword');
+
+    this.einnahmeService.searchEinnahmen(keyword, this.pageNumber - 1, this.pageSize).subscribe({
+      next: (einnahmenData: Einnahme[]) => {
+        this.einnahmen = einnahmenData;
+      },
+      error: (error: HttpErrorResponse) => {
+        alert(error.message);
+      }
+    });
+  }
+
+  handleListEinnahmen(){
     this.einnahmeService.getEinnahmenPaginate(this.pageNumber - 1, this.pageSize).subscribe({
       next: (einnahmenData: Einnahme[]) => {
         this.einnahmen = einnahmenData;

@@ -8,14 +8,16 @@ import { Router } from '@angular/router';
 })
 export class SearchComponent implements OnInit {
 
-  @Input() table = '';
+  @Input() table: String = "test";
   constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
 
   doSearch(value: string): void {
-    console.log(`/search/${this.table}/${value}`);
-    this.router.navigateByUrl(`/search/${this.table}/${value}`);
+    console.log(`/${this.table}/search/${value}`);
+    console.log(`/einnahmen/search/${value}`);
+    this.router.navigateByUrl(`/einnahmen/search/${value}`);
   }
+
 }

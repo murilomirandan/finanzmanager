@@ -22,8 +22,8 @@ const routes: Routes = [
   {path: 'home', component: HomeComponent},
   {path: 'einnahmen', component: EinnahmeComponent},
   {path: 'ausgaben', component: AusgabeComponent},
-  {path: 'search/einnahmen/:keyword', component: EinnahmeComponent},
-  {path: 'search/ausgaben/:keyword', component: AusgabeComponent},
+  {path: 'einnahmen/search/:keyword', component: EinnahmeComponent},
+  {path: 'ausgaben/search/:keyword', component: AusgabeComponent},
   {path: '', redirectTo: '/home', pathMatch:'full'},
   {path: '**', redirectTo: '/home', pathMatch:'full'},
 ];
