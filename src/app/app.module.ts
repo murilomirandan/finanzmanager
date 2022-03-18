@@ -17,6 +17,7 @@ import { EinnahmeService } from './services/einnahme.service';
 import { AusgabeComponent } from './components/ausgabe/ausgabe.component';
 import { SubheaderComponent } from './components/subheader/subheader.component';
 import { SearchComponent } from './components/search/search.component';
+import { DatepickerComponent } from './components/datepicker/datepicker.component';
 
 const routes: Routes = [
   {path: 'home', component: HomeComponent},
@@ -24,6 +25,10 @@ const routes: Routes = [
   {path: 'ausgaben', component: AusgabeComponent},
   {path: 'einnahmen/search/:keyword', component: EinnahmeComponent},
   {path: 'ausgaben/search/:keyword', component: AusgabeComponent},
+  {path: 'einnahmen/searchbydatum/:datum', component: EinnahmeComponent},
+  {path: 'ausgaben/searchbydatum/:datum', component: AusgabeComponent},
+  {path: 'einnahmen/cancel', component: EinnahmeComponent},
+  {path: 'ausgaben/cancel', component: AusgabeComponent},
   {path: '', redirectTo: '/home', pathMatch:'full'},
   {path: '**', redirectTo: '/home', pathMatch:'full'},
 ];
@@ -35,7 +40,8 @@ const routes: Routes = [
     HomeComponent,
     AusgabeComponent,
     SubheaderComponent,
-    SearchComponent
+    SearchComponent,
+    DatepickerComponent
   ],
   imports: [
     RouterModule.forRoot(routes),

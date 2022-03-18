@@ -20,4 +20,7 @@ export class SearchComponent implements OnInit {
     this.router.navigateByUrl(`/einnahmen/search/${value}`);
   }
 
+  onCancel(){
+    this.router.navigateByUrl('/einnahmen/cancel');
+  }
 }

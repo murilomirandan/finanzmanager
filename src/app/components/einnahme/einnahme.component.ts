@@ -1,7 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, FormGroup, NgForm } from '@angular/forms';
-import { MatDatepickerInputEvent } from '@angular/material/datepicker';
+import { NgForm } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Einnahme } from 'src/app/common/einnahme';
 import { EinnahmeService } from 'src/app/services/einnahme.service';
@@ -18,37 +17,34 @@ export class EinnahmeComponent implements OnInit {
   einnahmeInModal: Einnahme;
   emptyEinnahme = new Einnahme();
 
-  form: FormGroup;
-
   //new properties for pagination
   pageNumber: number = 1;
-  pageSize: number = 5;
+  pageSize: number = 10;
   totalElements: number = 0;
-  previousKeyword: string | null = null;
 
   //search properties
   searchMode: boolean;
+  previousKeyword: string | null = null;
 
   constructor(private einnahmeService: EinnahmeService,
-    private formBuilder: FormBuilder,
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    this.getEinnahmenPaginate();
-
-    this.form = this.formBuilder.group({
-      dateRange: new FormGroup({
-        start: new FormControl(),
-        end: new FormControl()
-      })
-    });
+    // this.getEinnahmenPaginate();
+    this.route.paramMap.subscribe(() => {
+      this.getEinnahmen();
+    })
   }
 
-  public getEinnahmenPaginate(): void {
-    this.searchMode = this.route.snapshot.paramMap.has('keyword');
-    if(this.searchMode){
+  public getEinnahmen(): void {
+    console.log("getEinnahmen()");
+    if (this.route.snapshot.paramMap.has('keyword')) {
       this.handleSearchEinnahmen();
-    }else{
+    }
+    else if (this.route.snapshot.paramMap.has('datum')) {
+      this.handleSearchBetweenDaten();
+    }
+    else {
       this.handleListEinnahmen();
     }
   }
@@ -56,27 +52,59 @@ export class EinnahmeComponent implements OnInit {
   handleSearchEinnahmen() {
     const keyword: string = this.route.snapshot.paramMap.get('keyword');
 
-    this.einnahmeService.searchEinnahmen(keyword, this.pageNumber - 1, this.pageSize).subscribe({
-      next: (einnahmenData: Einnahme[]) => {
-        this.einnahmen = einnahmenData;
-      },
-      error: (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    });
+    if (this.previousKeyword != keyword) {
+      this.pageNumber = 1;
+    }
+
+    this.previousKeyword = keyword;
+    console.log(`keyword=${keyword}, pageNumber=${this.pageNumber}`);
+
+    this.einnahmeService.searchEinnahmen(keyword,
+      this.pageNumber - 1, this.pageSize).subscribe(this.processResult());
   }
 
-  handleListEinnahmen(){
-    this.einnahmeService.getEinnahmenPaginate(this.pageNumber - 1, this.pageSize).subscribe({
-      next: (einnahmenData: Einnahme[]) => {
-        this.einnahmen = einnahmenData;
-      },
-      error: (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    });
+  handleSearchBetweenDaten() {
+    console.log("handleSearchBetweenDaten()");
+    const datum: string = this.route.snapshot.paramMap.get('datum');
+
+    const startDate: string = datum.split("&")[0];
+    const endDate: string = datum.split("&")[1];
+
+    this.einnahmeService.searchEinnahmenBetweenDaten(startDate, endDate,
+      this.pageNumber - 1,
+      this.pageSize).subscribe(this.processResult());
   }
 
+  handleListEinnahmen() {
+    console.log("handleListEinnahmen()");
+    this.einnahmeService.getEinnahmenPaginate(this.pageNumber - 1,
+      this.pageSize).subscribe(this.processResult());
+  }
+
+  // pagination
+  private processResult() {
+    console.log("processResult()");
+    return (data: {
+      content: Einnahme[];
+      number: number;
+      size: number;
+      totalElements: number;
+    }) => {
+      console.log("Data: " + JSON.stringify(data));
+      this.einnahmen = data.content;
+      this.pageNumber = data.number + 1;
+      this.pageSize = data.size;
+      this.totalElements = data.totalElements;
+    };
+  }
+
+  updatePageSize(pageSize: number) {
+    this.pageSize = pageSize;
+    this.pageNumber = 1;
+    this.getEinnahmen();
+  }
+
+  // Modals
   public onOpenModal(einnahme: Einnahme, mode: string): void {
     const container = document.getElementById('main-container');
     const button = document.createElement('button');
@@ -106,7 +134,7 @@ export class EinnahmeComponent implements OnInit {
     this.einnahmeService.addEinnahmen(addForm.value).subscribe({
       next: (response: Einnahme) => {
         console.log(response);
-        this.getEinnahmenPaginate();
+        this.getEinnahmen();
         addForm.reset();
       },
       error: (error: HttpErrorResponse) => {
@@ -119,7 +147,7 @@ export class EinnahmeComponent implements OnInit {
     this.einnahmeService.updateEinnahme(einnahme).subscribe({
       next: (response: Einnahme) => {
         console.log(response);
-        this.getEinnahmenPaginate();
+        this.getEinnahmen();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
@@ -131,54 +159,11 @@ export class EinnahmeComponent implements OnInit {
     this.einnahmeService.deleteEinnahme(einnahmeId).subscribe({
       next: (response: void) => {
         console.log(response);
-        this.getEinnahmenPaginate();
+        this.getEinnahmen();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
       }
     });
   }
-
-  public searchZwischenDaten(): void {
-    const results: Einnahme[] = [];
-    const startDatum = new Date(this.form.get('dateRange')?.value.start);
-    const endDatum = new Date(this.form.get('dateRange')?.value.end);
-    // console.log(`Start: ${startDatum}, End: ${endDatum}`);
-    endDatum.setDate(endDatum.getDate() + 1);
-
-    for (const einnahme of this.einnahmen) {
-      let checkDatum: Date = new Date(formatDate(einnahme.datum));
-      // console.log(`Einnahme: ${einnahme.id} ${checkDatum}`);
-      // console.log(checkDatum >= startDatum && checkDatum <= endDatum);
-
-      if (checkDatum >= startDatum && checkDatum <= endDatum){
-        results.push(einnahme);
-      }
-    }
-    this.einnahmen = results;
-  }
-
-  public onCancel(){
-    this.getEinnahmenPaginate();
-    this.form.reset();
-  }
-
-  // pagination
-  updatePageSize(pageSize: number){
-    this.pageSize = pageSize;
-    this.pageNumber = 1;
-    this.getEinnahmenPaginate();
-  }
-}
-
-function formatDate(date: Date) {
-  var d = new Date(date),
-      month = '' + (d.getMonth() + 1),
-      day = '' + d.getDate(),
-      year = d.getFullYear();
-
-  if (month.length < 2) month = '0' + month;
-  if (day.length < 2) day = '0' + day;
-
-  return [year, month, day].join('-');
 }

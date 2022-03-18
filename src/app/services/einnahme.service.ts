@@ -1,6 +1,6 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { Observable } from 'rxjs';
+import { map, Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { Einnahme } from '../common/einnahme';
 
@@ -12,15 +12,6 @@ export class EinnahmeService {
   private apiServiceUrl = environment.apiBaseUrl +'/einnahmen';
 
   constructor(private httpClient: HttpClient) { }
-
-  getEinnahmen(): Observable<Einnahme[]>{
-    return this.httpClient.get<Einnahme[]>(this.apiServiceUrl);
-  }
-
-  getEinnahmenPaginate(page: number, pageSize:number): Observable<Einnahme[]>{
-    const searchUrl = `${this.apiServiceUrl}?pageNo=${page}&pageSize=${pageSize}`;
-    return this.httpClient.get<Einnahme[]>(searchUrl);
-  }
 
   getEinnahme(einnahmeId: number): Observable<Einnahme>{
     return this.httpClient.get<Einnahme>(`${this.apiServiceUrl}/${einnahmeId}`);
@@ -38,8 +29,31 @@ export class EinnahmeService {
     return this.httpClient.delete<void>(`${this.apiServiceUrl}/${einnahmeId}`);
   }
 
-  searchEinnahmen(keyword: string, page: number, pageSize:number): Observable<Einnahme[]>{
-    const searchUrl = `${this.apiServiceUrl}/search?beschreibung=${keyword}&pageNo=${page}&pageSize=${pageSize}`;
-    return this.httpClient.get<Einnahme[]>(searchUrl);
+  getEinnahmen(): Observable<Einnahme[]>{
+    return this.httpClient.get<Einnahme[]>(this.apiServiceUrl);
   }
+
+  getEinnahmenPaginate(page: number, pageSize:number): Observable<GetResponseEinnahmen>{
+    const searchUrl = `${this.apiServiceUrl}?pageNo=${page}&pageSize=${pageSize}`;
+    console.log("getEinnahmenPaginate: ");
+    return this.httpClient.get<GetResponseEinnahmen>(searchUrl);
+  }
+
+  searchEinnahmen(keyword: string, page: number, pageSize:number): Observable<GetResponseEinnahmen>{
+    const searchUrl = `${this.apiServiceUrl}/search?beschreibung=${keyword}&pageNo=${page}&pageSize=${pageSize}`;
+    return this.httpClient.get<GetResponseEinnahmen>(searchUrl);
+  }
+
+  searchEinnahmenBetweenDaten(startDate: string, endDate: string, page: number, pageSize:number): Observable<GetResponseEinnahmen>{
+    const searchUrl = `${this.apiServiceUrl}/searchbydatum?startDatum=${startDate}&endDatum=${endDate}&pageNo=${page}&pageSize=${pageSize}`;
+    return this.httpClient.get<GetResponseEinnahmen>(searchUrl);
+  }
+}
+
+interface GetResponseEinnahmen {
+  content: Einnahme[],
+  size: number,
+  totalElements: number,
+  totalPages: number,
+  number: number
 }
