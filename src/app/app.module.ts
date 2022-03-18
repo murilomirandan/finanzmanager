@@ -18,6 +18,7 @@ import { AusgabeComponent } from './components/ausgabe/ausgabe.component';
 import { SubheaderComponent } from './components/subheader/subheader.component';
 import { SearchComponent } from './components/search/search.component';
 import { DatepickerComponent } from './components/datepicker/datepicker.component';
+import { AusgabeService } from './services/ausgabe.service';
 
 const routes: Routes = [
   {path: 'home', component: HomeComponent},
@@ -36,12 +37,12 @@ const routes: Routes = [
 @NgModule({
   declarations: [
     AppComponent,
-    EinnahmeComponent,
     HomeComponent,
-    AusgabeComponent,
     SubheaderComponent,
     SearchComponent,
-    DatepickerComponent
+    DatepickerComponent,
+    EinnahmeComponent,
+    AusgabeComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -55,7 +56,7 @@ const routes: Routes = [
     MatNativeDateModule,
     NgbModule,
   ],
-  providers: [EinnahmeService],
+  providers: [EinnahmeService, AusgabeService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

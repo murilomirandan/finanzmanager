@@ -1,1 +1,182 @@
-<p>ausgabe works!</p>
+<div class="container" id="main-container">
+  <h2>Ausgaben</h2>
+  <div class="container">
+    <div class="row gx-4 align-items-center">
+      <div class="col-3 p-3">
+        <button class="btn btn-success form-control" (click)="onOpenModal(emptyAusgabe, 'add')">
+          neue Ausgaben
+        </button>
+      </div>
+      <app-search class="col-6 p-3"></app-search>
+      <app-datepicker class="col-3 p-3"></app-datepicker>
+    </div>
+  </div>
+
+  <div class="container-fluid">
+    <div class="table-responsive">
+      <table class="table table-striped">
+        <thead class="table-light">
+          <tr>
+            <th>Beschreibung</th>
+            <th>Wert</th>
+            <th>Datum</th>
+            <th>Kategorie</th>
+            <th class="text-center">Handlung</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let ausgabe of ausgaben">
+            <td class="align-middle">{{ ausgabe?.beschreibung }}</td>
+            <td class="align-middle">{{ ausgabe?.wert | currency: "EUR" }}</td>
+            <td class="align-middle">{{ ausgabe?.datum | date: "dd-MM-yyyy" }}</td>
+            <td class="align-middle">{{ ausgabe?.kategorieId.kategorieName }}</td>
+            <td class="text-center align-middle">
+              <a (click)="onOpenModal(ausgabe, 'update')" class="btn btn-secondary tooltips" data-bs-placement="top" data-bs-original-title="Bearbeiten">Bearbeiten</a> |
+              <a (click)="onOpenModal(ausgabe, 'delete')" class="btn btn-danger tooltips" data-bs-placement="top" data-bs-original-title="Löschen">Löschen</a>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <!-- if products empty then display a message -->
+    <div *ngIf="ausgaben?.length == 0" class="alert alert-warning col-md-12" role="alert">
+      Keine Ausgaben gefunden.
+    </div>
+
+    <!-- begin pagination -->
+    <div class="footer-pagination">
+      <div class="row">
+        <div class="col-md-4"> </div>
+
+        <div class="col-md-8">
+          <div class="row">
+            <div class="col-md-9">
+
+              <ngb-pagination
+                [(page)]="pageNumber"
+                [pageSize]="pageSize"
+                [collectionSize]="totalElements"
+                [maxSize]="2"
+                [boundaryLinks]="true"
+                (pageChange)="getAusgaben()">
+
+              </ngb-pagination>
+
+            </div>
+
+            <!--  -->
+            <div class="col-md-3 mt-2" style="text-align: right;">
+              <span class="mr-2">Page Size </span>
+
+              <select #mySelect (change)="updatePageSize(+mySelect.value)">
+                <option>2</option>
+                <option>5</option>
+                <option selected="true">10</option>
+                <option>20</option>
+                <option>50</option>
+              </select>
+            </div>
+            <!--  -->
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- end pagination -->
+  </div>
+</div>
+
+<!-- Add Ausgabe Modal -->
+<div class="modal fade" id="addAusgabeModal" tabindex="-1" role="dialog" aria-labelledby="addAusgabeModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="addAusgabeModalLabel">Add Ausgabe</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+     </div>
+     <div class="modal-body">
+        <form #addForm="ngForm" (ngSubmit)="onAddAusgabe(addForm)">
+        <div class="form-group">
+           <label for="beschreibung">Beschreibung</label>
+           <input type="text" ngModel name="beschreibung" class="form-control" id="beschreibung" placeholder="Beschreibung" required>
+        </div>
+        <div class="form-group">
+           <label for="wert">Wert</label>
+           <input type="number" step="any" ngModel name="wert" class="form-control" id="wert" placeholder="199.54" required>
+        </div>
+        <div class="form-group">
+           <label for="datum">Datum</label>
+           <input type="date" ngModel name="datum" class="form-control" id="datum" placeholder="2022-03-15" required>
+        </div>
+        <div class="form-group">
+          <label for="kategorie">Kategorie</label>
+          <input type="text" ngModel name="kategorie" class="form-control" id="kategorie" placeholder="Bildung" required>
+       </div>
+        <div class="modal-footer">
+           <button type="button" id="add-ausgabe-form" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
+           <button type="reset" id="" class="btn btn-danger">Zurücksetzen</button>
+           <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary">Speichern</button>
+        </div>
+        </form>
+     </div>
+    </div>
+  </div>
+</div>
+
+<!-- Update Modal -->
+<div class="modal fade" id="updateAusgabeModal" tabindex="-1" role="dialog" aria-labelledby="updateAusgabeModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h2 class="modal-title" id="updateAusgabeModalLabel"> Bearbeiten </h2>
+           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+           <form #updateForm="ngForm">
+              <div class="form-group">
+                 <label for="beschreibung">Beschreibung</label>
+                 <input type="text" ngModel="{{ ausgabeInModal?.beschreibung }}" name="beschreibung" class="form-control" id="beschreibung" placeholder="Beschreibung" required>
+              </div>
+              <input type="hidden" ngModel="{{ ausgabeInModal?.id }}" name="id" class="form-control" id="id">
+              <div class="form-group">
+                 <label for="wert">Wert</label>
+                 <input type="number" ngModel="{{ ausgabeInModal?.wert }}" name="wert" class="form-control" id="wert" placeholder="199.54" required>
+              </div>
+              <div class="form-group">
+                 <label for="datum">Datum</label>
+                 <input type="date" ngModel="{{ ausgabeInModal?.datum | date: 'medium'}}" name="datum" class="form-control" id="datum" placeholder="2022-03-15" required>
+              </div>
+              <div class="form-group">
+                <label for="kategorie">Kategorie</label>
+                <input type="text" ngModel="{{ ausgabeInModal?.kategorieId.kategorieName }}" name="kategorie" class="form-control" id="datum" placeholder="2022-03-15" required>
+             </div>
+              <div class="modal-footer">
+                 <button type="button" id="" data-bs-dismiss="modal" class="btn btn-secondary">Schließen</button>
+                 <button type="reset" id="" class="btn btn-danger">Zurücksetzen</button>
+                 <button [disabled]="updateForm.invalid" (click)="onUpdateAusgabe(updateForm.value)" data-bs-dismiss="modal" class="btn btn-primary">Speichern</button>
+              </div>
+           </form>
+        </div>
+     </div>
+  </div>
+</div>
+
+<!-- Delete Modal -->
+<div class="modal fade" id="deleteAusgabeModal" tabindex="-1" role="dialog" aria-labelledby="deleteModelLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+     <div class="modal-content">
+        <div class="modal-header">
+           <h2 class="modal-title" id="deleteModelLabel">Löschen</h2>
+           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+           <p>Are you sure you want to delete this Ausgabe "{{ ausgabeInModal?.beschreibung }}"?</p>
+           <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nein</button>
+              <button (click)="onDeleteAusgabe(ausgabeInModal.id)" class="btn btn-danger" data-bs-dismiss="modal">Ja</button>
+           </div>
+        </div>
+     </div>
+  </div>
+</div>
+

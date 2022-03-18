@@ -11,7 +11,7 @@ import { EinnahmeService } from 'src/app/services/einnahme.service';
   styleUrls: ['./einnahme.component.css']
 })
 export class EinnahmeComponent implements OnInit {
-  className: 'einnahmen';
+  className: string = 'einnahmen';
 
   einnahmen: Einnahme[];
   einnahmeInModal: Einnahme;
@@ -36,8 +36,9 @@ export class EinnahmeComponent implements OnInit {
     })
   }
 
-  public getEinnahmen(): void {
+  getEinnahmen() {
     console.log("getEinnahmen()");
+    console.log(this.route.snapshot.paramMap.has('einnahmen'));
     if (this.route.snapshot.paramMap.has('keyword')) {
       this.handleSearchEinnahmen();
     }
