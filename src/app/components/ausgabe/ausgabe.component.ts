@@ -5,6 +5,7 @@ import { NgForm } from '@angular/forms';
 
 import { Ausgabe } from 'src/app/common/ausgabe';
 import { AusgabeService } from 'src/app/services/ausgabe.service';
+import { AusgabeKategorie } from 'src/app/common/ausgabe-kategorie';
 
 @Component({
   selector: 'app-ausgabe',
@@ -14,6 +15,16 @@ import { AusgabeService } from 'src/app/services/ausgabe.service';
 export class AusgabeComponent implements OnInit {
 
   currentClass = 'ausgaben';
+  kategorieOptions:  AusgabeKategorie[] = [
+    new AusgabeKategorie(1, "Miete"),
+    new AusgabeKategorie(2, "Lebensmittel"),
+    new AusgabeKategorie(3, "Freizeit"),
+    new AusgabeKategorie(4, "Versicherung"),
+    new AusgabeKategorie(5, "Mobilität"),
+    new AusgabeKategorie(6, "Bildung"),
+    new AusgabeKategorie(7, "Gesundheit"),
+    new AusgabeKategorie(8, "Andere")
+  ];
 
   ausgaben: Ausgabe[];
   ausgabeInModal: Ausgabe;
@@ -132,20 +143,23 @@ export class AusgabeComponent implements OnInit {
   }
 
   public onAddAusgabe(addForm: NgForm): void {
+    console.log(addForm);
+    // TODO: get kategorie info and send request to add in the DB
     // document.getElementById('add-ausgabe-form')?.click();
-    this.ausgabeService.addAusgaben(addForm.value).subscribe({
-      next: (response: Ausgabe) => {
-        console.log(response);
-        this.getAusgaben();
-        addForm.reset();
-      },
-      error: (error: HttpErrorResponse) => {
-        alert(error.message);
-      }
-    });
+    // this.ausgabeService.addAusgaben(addForm.value).subscribe({
+    //   next: (response: Ausgabe) => {
+    //     console.log(response);
+    //     this.getAusgaben();
+    //     addForm.reset();
+    //   },
+    //   error: (error: HttpErrorResponse) => {
+    //     alert(error.message);
+    //   }
+    // });
   }
 
   public onUpdateAusgabe(ausgabe: Ausgabe): void {
+    // TODO: get kategorie info and send request to update in the DB
     this.ausgabeService.updateAusgabe(ausgabe).subscribe({
       next: (response: Ausgabe) => {
         console.log(response);

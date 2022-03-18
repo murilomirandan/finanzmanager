@@ -59,7 +59,6 @@
                 [maxSize]="2"
                 [boundaryLinks]="true"
                 (pageChange)="getAusgaben()">
-
               </ngb-pagination>
 
             </div>
@@ -110,7 +109,9 @@
         </div>
         <div class="form-group">
           <label for="kategorie">Kategorie</label>
-          <input type="text" ngModel name="kategorie" class="form-control" id="kategorie" placeholder="Bildung" required>
+          <select ngModel name="kategorie" class="form-select" id="kategorie" required>
+            <option *ngFor="let option of kategorieOptions" value="{{option.id}}"> {{ option.kategorieName}} </option>
+          </select>
        </div>
         <div class="modal-footer">
            <button type="button" id="add-ausgabe-form" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
@@ -143,12 +144,16 @@
                  <input type="number" ngModel="{{ ausgabeInModal?.wert }}" name="wert" class="form-control" id="wert" placeholder="199.54" required>
               </div>
               <div class="form-group">
+                <!-- FIXME: show the real data from DB. Up to now, it doesnt show -->
                  <label for="datum">Datum</label>
                  <input type="date" ngModel="{{ ausgabeInModal?.datum | date: 'medium'}}" name="datum" class="form-control" id="datum" placeholder="2022-03-15" required>
               </div>
               <div class="form-group">
+                <!-- FIXME: show the real data from DB. Up to now, it doesnt show -->
                 <label for="kategorie">Kategorie</label>
-                <input type="text" ngModel="{{ ausgabeInModal?.kategorieId.kategorieName }}" name="kategorie" class="form-control" id="datum" placeholder="2022-03-15" required>
+                <select ngModel="{{ ausgabeInModal?.kategorieId }}" name="kategorie" class="form-select" id="kategorie" required>
+                  <option *ngFor="let option of kategorieOptions" value="{{ option }}"> {{ option.kategorieName}} </option>
+                </select>
              </div>
               <div class="modal-footer">
                  <button type="button" id="" data-bs-dismiss="modal" class="btn btn-secondary">Schließen</button>
