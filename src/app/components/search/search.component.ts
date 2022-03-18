@@ -8,21 +8,19 @@ import { Router } from '@angular/router';
 })
 export class SearchComponent implements OnInit {
 
-  // @Input() className: String;
-  className = "einnahmen";
+  @Input() classTable = 'test';
 
   constructor(private router: Router) { }
 
   ngOnInit(): void {
   }
 
-  doSearch(value: string): void {
-    console.log(`/${this.className}/search/${value}`);
-    console.log(`/${this.className}/search/${value}`);
-    this.router.navigateByUrl(`/${this.className}/search/${value}`);
+  doSearch(className:string, value: string): void {
+    console.log(`/${className}/search/${value}`);
+    this.router.navigateByUrl(`/${className}/search/${value}`);
   }
 
-  onCancel(){
-    this.router.navigateByUrl(`/${this.className}/cancel`);
+  onCancel(className: string){
+    this.router.navigateByUrl(`/${className}/cancel`);
   }
 }

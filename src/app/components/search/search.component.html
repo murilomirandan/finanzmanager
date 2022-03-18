@@ -1,24 +1,25 @@
 <div class="float-center">
   <div class="input-group">
-    <button (click)="doSearch(key.value)" class="btn btn-outline-secondary">
+    <button (click)="doSearch(classTable, key.value)" class="btn btn-outline-secondary">
       <i class="fa fa-search"></i>
     </button>
 
     <input
       #key
       type="text"
-      (keyup.enter)="doSearch(key.value)"
+      (keyup.enter)="doSearch(classTable, key.value)"
       class="form-control"
       placeholder="Search by Beschreibung..."
     />
 
     <button
       type="button"
-      (click)="onCancel()"
+      (click)="onCancel(classTable)"
       class="btn btn-outline-secondary"
     >
       X
     </button>
   </div>
 </div>
-<!-- mnb: {{ table }} -->
+<!-- <p>mnb: {{ item }}</p> -->
+

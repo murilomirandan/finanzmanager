@@ -12,7 +12,8 @@ import { AusgabeService } from 'src/app/services/ausgabe.service';
   styleUrls: ['./ausgabe.component.css']
 })
 export class AusgabeComponent implements OnInit {
-  className: string = 'ausgaben';
+
+  currentClass = 'ausgaben';
 
   ausgaben: Ausgabe[];
   ausgabeInModal: Ausgabe;
@@ -38,19 +39,20 @@ export class AusgabeComponent implements OnInit {
   }
 
   getAusgaben() {
-
+    console.log("getAusgaben()");
     if (this.route.snapshot.paramMap.has('keyword')) {
-      this.handleSearchEinnahmen();
+      this.handleSearchAusgaben();
     }
     else if (this.route.snapshot.paramMap.has('datum')) {
       this.handleSearchBetweenDaten();
     }
     else {
-      this.handleListEinnahmen();
+      this.handleListAusgaben();
     }
   }
 
-  handleSearchEinnahmen() {
+  handleSearchAusgaben() {
+    console.log("handleSearchAusgaben()");
     const keyword: string = this.route.snapshot.paramMap.get('keyword');
 
     if (this.previousKeyword != keyword) {
@@ -65,6 +67,7 @@ export class AusgabeComponent implements OnInit {
   }
 
   handleSearchBetweenDaten() {
+    console.log("handleAusgabenSearchBetweenDaten()");
     const datum: string = this.route.snapshot.paramMap.get('datum');
 
     const startDate: string = datum.split("&")[0];
@@ -75,7 +78,8 @@ export class AusgabeComponent implements OnInit {
       this.pageSize).subscribe(this.processResult());
   }
 
-  handleListEinnahmen() {
+  handleListAusgaben() {
+    console.log("handleListAusgaben()");
     this.ausgabeService.getAusgabenPaginate(this.pageNumber - 1,
       this.pageSize).subscribe(this.processResult());
   }

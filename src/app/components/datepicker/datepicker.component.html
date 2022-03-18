@@ -9,11 +9,11 @@
     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
     <mat-date-range-picker #picker>
       <mat-date-range-picker-actions>
-        <button (click)="onCancel()" mat-button matDateRangePickerCancel>
+        <button (click)="onCancel(classTable)" mat-button matDateRangePickerCancel>
           Cancel
         </button>
         <button
-          (click)="doSearch()"
+          (click)="doSearch(classTable)"
           mat-raised-button
           color="primary"
           matDateRangePickerApply

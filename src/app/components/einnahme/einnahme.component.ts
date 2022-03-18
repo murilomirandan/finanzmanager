@@ -11,7 +11,8 @@ import { EinnahmeService } from 'src/app/services/einnahme.service';
   styleUrls: ['./einnahme.component.css']
 })
 export class EinnahmeComponent implements OnInit {
-  className: string = 'einnahmen';
+
+  currentClass = 'einnahmen';
 
   einnahmen: Einnahme[];
   einnahmeInModal: Einnahme;
@@ -30,7 +31,6 @@ export class EinnahmeComponent implements OnInit {
     private route: ActivatedRoute) { }
 
   ngOnInit(): void {
-    // this.getEinnahmenPaginate();
     this.route.paramMap.subscribe(() => {
       this.getEinnahmen();
     })
@@ -38,7 +38,6 @@ export class EinnahmeComponent implements OnInit {
 
   getEinnahmen() {
     console.log("getEinnahmen()");
-    console.log(this.route.snapshot.paramMap.has('einnahmen'));
     if (this.route.snapshot.paramMap.has('keyword')) {
       this.handleSearchEinnahmen();
     }

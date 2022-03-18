@@ -9,7 +9,8 @@ import { Router } from '@angular/router';
 })
 export class DatepickerComponent implements OnInit {
 
-  @Input() table: String = 'test';
+  @Input() classTable = 'test';
+
   constructor(private router: Router,
     private formBuilder: FormBuilder) { }
 
@@ -25,20 +26,18 @@ export class DatepickerComponent implements OnInit {
     });
   }
 
-  doSearch(): void {
+  doSearch(className: string): void {
     const startDatum = new Date(this.form.get('dateRange')?.value.start);
     const endDatum = new Date(this.form.get('dateRange')?.value.end);
-    // endDatum.setDate(endDatum.getDate() + 1);
 
     const value: string = formatDate(startDatum) + "&" + formatDate(endDatum);
-    console.log(`/${this.table}/searchbydatum/${value}`);
-    console.log(`/einnahmen/searchbydatum/${value}`);
-    this.router.navigateByUrl(`/einnahmen/searchbydatum/${value}`);
+    console.log(`/${className}/searchbydatum/${value}`);
+    this.router.navigateByUrl(`/${className}/searchbydatum/${value}`);
   }
 
-  onCancel(){
+  onCancel(className: string){
     this.form.reset();
-    this.router.navigateByUrl('/einnahmen/cancel');
+    this.router.navigateByUrl(`/${className}/cancel`);
   }
 }
 

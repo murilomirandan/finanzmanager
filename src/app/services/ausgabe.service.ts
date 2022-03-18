@@ -31,7 +31,8 @@ export class AusgabeService {
   }
 
   searchAusgaben(keyword: string, page: number, pageSize: number): Observable<GetResponseAusgaben> {
-    const searchUrl = `${this.apiServiceUrl}?beschreibung=${keyword}&pageNo=${page}&pageSize=${pageSize}`;
+    const searchUrl = `${this.apiServiceUrl}/search?beschreibung=${keyword}&pageNo=${page}&pageSize=${pageSize}`;
+    console.log(searchUrl);
     return this.httpClient.get<GetResponseAusgaben>(searchUrl);
   }
 
