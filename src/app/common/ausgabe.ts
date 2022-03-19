@@ -5,5 +5,5 @@ export class Ausgabe {
   beschreibung: string;
   wert: number;
   datum: Date;
-  kategorieId: AusgabeKategorie;
+  kategorie: AusgabeKategorie;
 }

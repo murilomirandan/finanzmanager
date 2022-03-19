@@ -11,11 +11,11 @@ export class DatepickerComponent implements OnInit {
 
   @Input() classTable = 'test';
 
+  form: FormGroup;
+  // dateInterval: string;
+
   constructor(private router: Router,
     private formBuilder: FormBuilder) { }
-
-
-  form: FormGroup;
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -26,13 +26,17 @@ export class DatepickerComponent implements OnInit {
     });
   }
 
-  doSearch(className: string): void {
+  doSearch(className: string) {
     const startDatum = new Date(this.form.get('dateRange')?.value.start);
     const endDatum = new Date(this.form.get('dateRange')?.value.end);
+
+    // this.dateInterval = `Beginn: ${formatDate(startDatum)} - End: ${formatDate(endDatum)}`;
+    // console.log(this.dateInterval);
 
     const value: string = formatDate(startDatum) + "&" + formatDate(endDatum);
     console.log(`/${className}/searchbydatum/${value}`);
     this.router.navigateByUrl(`/${className}/searchbydatum/${value}`);
+    // return this.dateInterval;
   }
 
   onCancel(className: string){

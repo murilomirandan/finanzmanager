@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { SubheaderComponent } from './subheader.component';
+import { KostenrechnungComponent } from './kostenrechnung.component';
 
-describe('SubheaderComponent', () => {
-  let component: SubheaderComponent;
-  let fixture: ComponentFixture<SubheaderComponent>;
+describe('KostenrechnungComponent', () => {
+  let component: KostenrechnungComponent;
+  let fixture: ComponentFixture<KostenrechnungComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ SubheaderComponent ]
+      declarations: [ KostenrechnungComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(SubheaderComponent);
+    fixture = TestBed.createComponent(KostenrechnungComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

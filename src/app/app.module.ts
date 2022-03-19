@@ -15,21 +15,25 @@ import { HomeComponent } from './components/home/home.component';
 import { EinnahmeComponent } from './components/einnahme/einnahme.component';
 import { EinnahmeService } from './services/einnahme.service';
 import { AusgabeComponent } from './components/ausgabe/ausgabe.component';
-import { SubheaderComponent } from './components/subheader/subheader.component';
 import { SearchComponent } from './components/search/search.component';
 import { DatepickerComponent } from './components/datepicker/datepicker.component';
 import { AusgabeService } from './services/ausgabe.service';
+import { KostenrechnungComponent } from './components/kostenrechnung/kostenrechnung.component';
+import { KostenrechnungService } from './services/kostenrechnung.service';
 
 const routes: Routes = [
   {path: 'home', component: HomeComponent},
   {path: 'einnahmen', component: EinnahmeComponent},
   {path: 'ausgaben', component: AusgabeComponent},
+  {path: 'kostenrechnung', component: KostenrechnungComponent},
   {path: 'einnahmen/search/:keyword', component: EinnahmeComponent},
   {path: 'ausgaben/search/:keyword', component: AusgabeComponent},
   {path: 'einnahmen/searchbydatum/:datum', component: EinnahmeComponent},
   {path: 'ausgaben/searchbydatum/:datum', component: AusgabeComponent},
+  {path: 'kostenrechnung/searchbydatum/:datum', component: KostenrechnungComponent},
   {path: 'einnahmen/cancel', component: EinnahmeComponent},
   {path: 'ausgaben/cancel', component: AusgabeComponent},
+  {path: 'kostenrechnung/cancel', component: KostenrechnungComponent},
   {path: '', redirectTo: '/home', pathMatch:'full'},
   {path: '**', redirectTo: '/home', pathMatch:'full'},
 ];
@@ -38,11 +42,11 @@ const routes: Routes = [
   declarations: [
     AppComponent,
     HomeComponent,
-    SubheaderComponent,
     SearchComponent,
     DatepickerComponent,
     EinnahmeComponent,
     AusgabeComponent,
+    KostenrechnungComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -56,7 +60,7 @@ const routes: Routes = [
     MatNativeDateModule,
     NgbModule,
   ],
-  providers: [EinnahmeService, AusgabeService],
+  providers: [EinnahmeService, AusgabeService, KostenrechnungService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

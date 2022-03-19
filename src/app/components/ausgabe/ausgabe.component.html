@@ -29,7 +29,7 @@
             <td class="align-middle">{{ ausgabe?.beschreibung }}</td>
             <td class="align-middle">{{ ausgabe?.wert | currency: "EUR" }}</td>
             <td class="align-middle">{{ ausgabe?.datum | date: "dd-MM-yyyy" }}</td>
-            <td class="align-middle">{{ ausgabe?.kategorieId.kategorieName }}</td>
+            <td class="align-middle">{{ ausgabe?.kategorie.kategorieName }}</td>
             <td class="text-center align-middle">
               <a (click)="onOpenModal(ausgabe, 'update')" class="btn btn-secondary tooltips" data-bs-placement="top" data-bs-original-title="Bearbeiten">Bearbeiten</a> |
               <a (click)="onOpenModal(ausgabe, 'delete')" class="btn btn-danger tooltips" data-bs-placement="top" data-bs-original-title="Löschen">Löschen</a>
@@ -151,7 +151,7 @@
               <div class="form-group">
                 <!-- FIXME: show the real data from DB. Up to now, it doesnt show -->
                 <label for="kategorie">Kategorie</label>
-                <select ngModel="{{ ausgabeInModal?.kategorieId }}" name="kategorie" class="form-select" id="kategorie" required>
+                <select ngModel="{{ ausgabeInModal?.kategorie }}" name="kategorie" class="form-select" id="kategorie" required>
                   <option *ngFor="let option of kategorieOptions" value="{{ option }}"> {{ option.kategorieName}} </option>
                 </select>
              </div>
