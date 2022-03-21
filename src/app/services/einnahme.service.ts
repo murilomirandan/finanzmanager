@@ -21,7 +21,7 @@ export class EinnahmeService {
     return this.httpClient.post<Einnahme>(this.apiServiceUrl, einnahme);
   }
 
-  updateEinnahme(einnahme: Einnahme): Observable<Einnahme>{
+  updateEinnahme(einnahme: Einnahme): Observable<any>{
     return this.httpClient.put<Einnahme>(this.apiServiceUrl, einnahme);
   }
 

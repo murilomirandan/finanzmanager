@@ -1,11 +1,12 @@
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute} from '@angular/router';
 import { HttpErrorResponse } from '@angular/common/http';
-import { NgForm } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, NgForm, ValidationErrors, Validators } from '@angular/forms';
 
 import { Ausgabe } from 'src/app/common/ausgabe';
 import { AusgabeService } from 'src/app/services/ausgabe.service';
 import { AusgabeKategorie } from 'src/app/common/ausgabe-kategorie';
+import { Shared } from '../shared/shared';
 
 @Component({
   selector: 'app-ausgabe',
@@ -15,6 +16,9 @@ import { AusgabeKategorie } from 'src/app/common/ausgabe-kategorie';
 export class AusgabeComponent implements OnInit {
 
   currentClass = 'ausgaben';
+  addAusgabeForm: FormGroup;
+  updateAusgabeForm: FormGroup;
+
   kategorieOptions:  AusgabeKategorie[] = [
     new AusgabeKategorie(1, "Miete"),
     new AusgabeKategorie(2, "Lebensmittel"),
@@ -40,17 +44,35 @@ export class AusgabeComponent implements OnInit {
   previousKeyword: string | null = null;
 
   constructor(private ausgabeService: AusgabeService,
-    private route: ActivatedRoute) {
+    private route: ActivatedRoute,
+    private formBuilder: FormBuilder) {
     }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(() => {
       this.getAusgaben();
-    })
+    });
+
+    this.addAusgabeForm = this.formBuilder.group({
+      beschreibung: new FormControl('', [
+        Validators.required, Validators.minLength(2), Shared.notOnlyWhitespace]),
+      wert: new FormControl('', [Validators.required]),
+      datum: new FormControl('', [Validators.required]),
+      kategorie: new FormControl('', [Validators.required])
+    });
+
+    this.updateAusgabeForm = this.formBuilder.group({
+      id:new FormControl('', []),
+      beschreibung: new FormControl('', [
+        Validators.required, Validators.minLength(2), Shared.notOnlyWhitespace]),
+      wert: new FormControl('', [Validators.required]),
+      datum: new FormControl('', [Validators.required]),
+      kategorie: new FormControl('', [Validators.required])
+    });
   }
 
   getAusgaben() {
-    console.log("getAusgaben()");
+    // console.log("getAusgaben()");
     if (this.route.snapshot.paramMap.has('keyword')) {
       this.handleSearchAusgaben();
     }
@@ -63,7 +85,7 @@ export class AusgabeComponent implements OnInit {
   }
 
   handleSearchAusgaben() {
-    console.log("handleSearchAusgaben()");
+    // console.log("handleSearchAusgaben()");
     const keyword: string = this.route.snapshot.paramMap.get('keyword');
 
     if (this.previousKeyword != keyword) {
@@ -78,7 +100,7 @@ export class AusgabeComponent implements OnInit {
   }
 
   handleSearchBetweenDaten() {
-    console.log("handleAusgabenSearchBetweenDaten()");
+    // console.log("handleAusgabenSearchBetweenDaten()");
     const datum: string = this.route.snapshot.paramMap.get('datum');
 
     const startDate: string = datum.split("&")[0];
@@ -90,7 +112,7 @@ export class AusgabeComponent implements OnInit {
   }
 
   handleListAusgaben() {
-    console.log("handleListAusgaben()");
+    // console.log("handleListAusgaben()");
     this.ausgabeService.getAusgabenPaginate(this.pageNumber - 1,
       this.pageSize).subscribe(this.processResult());
   }
@@ -103,7 +125,7 @@ export class AusgabeComponent implements OnInit {
       size: number;
       totalElements: number;
     }) => {
-      console.log("Data: " + JSON.stringify(data));
+      // console.log("Data: " + JSON.stringify(data));
       this.ausgaben = data.content;
       this.pageNumber = data.number + 1;
       this.pageSize = data.size;
@@ -131,6 +153,16 @@ export class AusgabeComponent implements OnInit {
     }
     if (mode === 'update') {
       this.ausgabeInModal = ausgabe;
+      this.updateAusgabeForm.setValue({
+        id: ausgabe.id,
+        beschreibung: ausgabe.beschreibung,
+        wert: ausgabe.wert,
+        datum: new Date(ausgabe.datum).toISOString().substring(0,10),
+        kategorie: ausgabe.kategorie.id
+      });
+
+      // console.log(this.updateAusgabeForm);
+      // console.log("Ausgabe in update Modal", JSON.stringify(this.ausgabeInModal));
       button.setAttribute('data-bs-target', '#updateAusgabeModal');
     }
     if (mode === 'delete') {
@@ -142,28 +174,56 @@ export class AusgabeComponent implements OnInit {
     button.click();
   }
 
-  public onAddAusgabe(addForm: NgForm): void {
-    console.log(addForm);
-    // TODO: get kategorie info and send request to add in the DB
-    // document.getElementById('add-ausgabe-form')?.click();
-    // this.ausgabeService.addAusgaben(addForm.value).subscribe({
-    //   next: (response: Ausgabe) => {
-    //     console.log(response);
-    //     this.getAusgaben();
-    //     addForm.reset();
-    //   },
-    //   error: (error: HttpErrorResponse) => {
-    //     alert(error.message);
-    //   }
-    // });
+  public onAddAusgabe(): void {
+    if(this.addAusgabeForm.invalid){
+      this.addAusgabeForm.markAllAsTouched();
+      return;
+    }
+
+    let ausgabe = new Ausgabe();
+    ausgabe.beschreibung = this.addAusgabeForm.controls['beschreibung'].value;
+    ausgabe.wert = this.addAusgabeForm.controls['wert'].value;
+    ausgabe.datum = this.addAusgabeForm.controls['datum'].value;
+    let kategorieId = this.addAusgabeForm.controls['kategorie'].value;
+
+    let ausgabeKategorie = {...this.kategorieOptions.filter(option => option.id === kategorieId)}[0];
+    ausgabe.kategorie = ausgabeKategorie;
+    // console.log(`Ausgabe im Add form: ${JSON.stringify(ausgabeKategorie)}`);
+    // console.log(`Ausgabe im Add form: ${JSON.stringify(ausgabe)}`);
+
+    this.ausgabeService.addAusgaben(ausgabe).subscribe({
+      next: (response: Ausgabe) => {
+        console.log(response);
+        this.getAusgaben();
+        this.addAusgabeForm.reset();
+      },
+      error: (error: HttpErrorResponse) => {
+        alert(error.message);
+      }
+    });
   }
 
-  public onUpdateAusgabe(ausgabe: Ausgabe): void {
-    // TODO: get kategorie info and send request to update in the DB
+  public onUpdateAusgabe(): void {
+    if(this.updateAusgabeForm.invalid){
+      this.updateAusgabeForm.markAllAsTouched();
+      return;
+    }
+
+    let ausgabe = new Ausgabe();
+    ausgabe.id = this.updateAusgabeForm.controls['id'].value;
+    ausgabe.beschreibung = this.updateAusgabeForm.controls['beschreibung'].value;
+    ausgabe.wert = this.updateAusgabeForm.controls['wert'].value;
+    ausgabe.datum = this.updateAusgabeForm.controls['datum'].value;
+    let kategorieId = this.updateAusgabeForm.controls['kategorie'].value;
+
+    let ausgabeKategorie = {...this.kategorieOptions.filter(option => option.id === kategorieId)}[0];
+    ausgabe.kategorie = ausgabeKategorie;
+
     this.ausgabeService.updateAusgabe(ausgabe).subscribe({
       next: (response: Ausgabe) => {
         console.log(response);
         this.getAusgaben();
+        this.updateAusgabeForm.reset();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
@@ -183,3 +243,4 @@ export class AusgabeComponent implements OnInit {
     });
   }
 }
+

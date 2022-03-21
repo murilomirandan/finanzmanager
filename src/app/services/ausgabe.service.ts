@@ -14,10 +14,12 @@ export class AusgabeService {
   constructor(private httpClient: HttpClient) { }
 
   addAusgaben(ausgabe: Ausgabe): Observable<Ausgabe> {
+    console.log("Ausgabe from Service: ", JSON.stringify(ausgabe));
     return this.httpClient.post<Ausgabe>(this.apiServiceUrl, ausgabe);
   }
 
-  updateAusgabe(ausgabe: Ausgabe): Observable<Ausgabe> {
+  updateAusgabe(ausgabe: Ausgabe): Observable<any> {
+    console.log(JSON.stringify(ausgabe));
     return this.httpClient.put<Ausgabe>(this.apiServiceUrl, ausgabe);
   }
 

@@ -1,6 +1,6 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
-import { NgForm } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, NgForm, ValidationErrors, Validators } from '@angular/forms';
 import { ActivatedRoute } from '@angular/router';
 import { Einnahme } from 'src/app/common/einnahme';
 import { EinnahmeService } from 'src/app/services/einnahme.service';
@@ -13,6 +13,8 @@ import { EinnahmeService } from 'src/app/services/einnahme.service';
 export class EinnahmeComponent implements OnInit {
 
   currentClass = 'einnahmen';
+  addEinnahmeForm: FormGroup;
+  updateEinnahmeForm: FormGroup;
 
   einnahmen: Einnahme[];
   einnahmeInModal: Einnahme;
@@ -28,12 +30,28 @@ export class EinnahmeComponent implements OnInit {
   previousKeyword: string | null = null;
 
   constructor(private einnahmeService: EinnahmeService,
-    private route: ActivatedRoute) { }
+    private route: ActivatedRoute,
+    private formBuilder: FormBuilder) { }
 
   ngOnInit(): void {
     this.route.paramMap.subscribe(() => {
       this.getEinnahmen();
-    })
+    });
+
+    this.addEinnahmeForm = this.formBuilder.group({
+      beschreibung: new FormControl('', [
+        Validators.required, Validators.minLength(2), this.notOnlyWhitespace]),
+      wert: new FormControl('', [Validators.required]),
+      datum: new FormControl('', [Validators.required]),
+    });
+
+    this.updateEinnahmeForm = this.formBuilder.group({
+      id: new FormControl('', [Validators.required]),
+      beschreibung: new FormControl('', [
+        Validators.required, Validators.minLength(2), this.notOnlyWhitespace]),
+      wert: new FormControl('', [Validators.required]),
+      datum: new FormControl('', [Validators.required]),
+    });
   }
 
   getEinnahmen() {
@@ -118,6 +136,12 @@ export class EinnahmeComponent implements OnInit {
     }
     if (mode === 'update') {
       this.einnahmeInModal = einnahme;
+      this.updateEinnahmeForm.setValue({
+        id: einnahme.id,
+        beschreibung: einnahme.beschreibung,
+        wert: einnahme.wert,
+        datum: new Date(einnahme.datum).toISOString().substring(0, 10)
+      });
       button.setAttribute('data-bs-target', '#updateEinnahmeModal');
     }
     if (mode === 'delete') {
@@ -129,13 +153,23 @@ export class EinnahmeComponent implements OnInit {
     button.click();
   }
 
-  public onAddEinnahme(addForm: NgForm): void {
+  public onAddEinnahme(): void {
+    if(this.addEinnahmeForm.invalid){
+      this.addEinnahmeForm.markAllAsTouched();
+      return;
+    }
+
+    let einnahme = new Einnahme();
+    einnahme.beschreibung = this.addEinnahmeForm.controls['beschreibung'].value;
+    einnahme.wert = this.addEinnahmeForm.controls['wert'].value;
+    einnahme.datum = this.addEinnahmeForm.controls['datum'].value;
+
     // document.getElementById('add-einnahme-form')?.click();
-    this.einnahmeService.addEinnahmen(addForm.value).subscribe({
+    this.einnahmeService.addEinnahmen(einnahme).subscribe({
       next: (response: Einnahme) => {
         console.log(response);
         this.getEinnahmen();
-        addForm.reset();
+        this.addEinnahmeForm.reset();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
@@ -143,11 +177,23 @@ export class EinnahmeComponent implements OnInit {
     });
   }
 
-  public onUpdateEinnahme(einnahme: Einnahme): void {
+  public onUpdateEinnahme(): void {
+    if(this.updateEinnahmeForm.invalid){
+      this.updateEinnahmeForm.markAllAsTouched();
+      return;
+    }
+
+    let einnahme = new Einnahme();
+    einnahme.id = this.updateEinnahmeForm.controls['id'].value;
+    einnahme.beschreibung = this.updateEinnahmeForm.controls['beschreibung'].value;
+    einnahme.wert = this.updateEinnahmeForm.controls['wert'].value;
+    einnahme.datum = this.updateEinnahmeForm.controls['datum'].value;
+
     this.einnahmeService.updateEinnahme(einnahme).subscribe({
       next: (response: Einnahme) => {
         console.log(response);
         this.getEinnahmen();
+        this.updateEinnahmeForm.reset();
       },
       error: (error: HttpErrorResponse) => {
         alert(error.message);
@@ -166,4 +212,18 @@ export class EinnahmeComponent implements OnInit {
       }
     });
   }
+
+  notOnlyWhitespace(control: FormControl): ValidationErrors {
+    // check id string only contains whitespace
+    if((control.value != null) && (control.value.trim().length === 0)){
+      //invalid, return error object
+      return {'notOnlyWhitespace': true};
+    }
+    else{
+      // valid, return null
+      return null;
+    }
+  }
+
+  get addBeschreibung(){ return this.addEinnahmeForm.get('beschreibung'); }
 }

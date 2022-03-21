@@ -92,34 +92,34 @@
       <div class="modal-header">
         <h2 class="modal-title" id="addAusgabeModalLabel">Add Ausgabe</h2>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-     </div>
-     <div class="modal-body">
-        <form #addForm="ngForm" (ngSubmit)="onAddAusgabe(addForm)">
+      </div>
+      <form [formGroup]="addAusgabeForm" (ngSubmit)="onAddAusgabe()">
+      <div class="modal-body">
         <div class="form-group">
-           <label for="beschreibung">Beschreibung</label>
-           <input type="text" ngModel name="beschreibung" class="form-control" id="beschreibung" placeholder="Beschreibung" required>
+          <label>Beschreibung</label>
+          <input formControlName="beschreibung" type="text" class="form-control" required>
         </div>
         <div class="form-group">
-           <label for="wert">Wert</label>
-           <input type="number" step="any" ngModel name="wert" class="form-control" id="wert" placeholder="199.54" required>
+          <label>Wert</label>
+          <input formControlName="wert" type="number" step="any" class="form-control" required>
         </div>
         <div class="form-group">
-           <label for="datum">Datum</label>
-           <input type="date" ngModel name="datum" class="form-control" id="datum" placeholder="2022-03-15" required>
+          <label>Datum</label>
+          <input formControlName="datum" type="date" class="form-control" required>
         </div>
         <div class="form-group">
-          <label for="kategorie">Kategorie</label>
-          <select ngModel name="kategorie" class="form-select" id="kategorie" required>
-            <option *ngFor="let option of kategorieOptions" value="{{option.id}}"> {{ option.kategorieName}} </option>
+          <label>Kategorie</label>
+          <select formControlName="kategorie" class="form-select" required>
+            <option *ngFor="let option of kategorieOptions" [ngValue]="option.id"> {{ option.kategorieName }} </option>
           </select>
+        </div>
        </div>
-        <div class="modal-footer">
+       <div class="modal-footer">
            <button type="button" id="add-ausgabe-form" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
            <button type="reset" id="" class="btn btn-danger">Zurücksetzen</button>
-           <button [disabled]="addForm.invalid" type="submit" class="btn btn-primary">Speichern</button>
+           <button type="submit" class="btn btn-primary">Speichern</button>
         </div>
-        </form>
-     </div>
+    </form>
     </div>
   </div>
 </div>
@@ -127,42 +127,40 @@
 <!-- Update Modal -->
 <div class="modal fade" id="updateAusgabeModal" tabindex="-1" role="dialog" aria-labelledby="updateAusgabeModalLabel" aria-hidden="true">
   <div class="modal-dialog" role="document">
-     <div class="modal-content">
-        <div class="modal-header">
-           <h2 class="modal-title" id="updateAusgabeModalLabel"> Bearbeiten </h2>
-           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="updateAusgabeModalLabel"> Bearbeiten </h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form [formGroup]="updateAusgabeForm" (ngSubmit)="onUpdateAusgabe()">
         <div class="modal-body">
-           <form #updateForm="ngForm">
-              <div class="form-group">
-                 <label for="beschreibung">Beschreibung</label>
-                 <input type="text" ngModel="{{ ausgabeInModal?.beschreibung }}" name="beschreibung" class="form-control" id="beschreibung" placeholder="Beschreibung" required>
-              </div>
-              <input type="hidden" ngModel="{{ ausgabeInModal?.id }}" name="id" class="form-control" id="id">
-              <div class="form-group">
-                 <label for="wert">Wert</label>
-                 <input type="number" ngModel="{{ ausgabeInModal?.wert }}" name="wert" class="form-control" id="wert" placeholder="199.54" required>
-              </div>
-              <div class="form-group">
-                <!-- FIXME: show the real data from DB. Up to now, it doesnt show -->
-                 <label for="datum">Datum</label>
-                 <input type="date" ngModel="{{ ausgabeInModal?.datum | date: 'medium'}}" name="datum" class="form-control" id="datum" placeholder="2022-03-15" required>
-              </div>
-              <div class="form-group">
-                <!-- FIXME: show the real data from DB. Up to now, it doesnt show -->
-                <label for="kategorie">Kategorie</label>
-                <select ngModel="{{ ausgabeInModal?.kategorie }}" name="kategorie" class="form-select" id="kategorie" required>
-                  <option *ngFor="let option of kategorieOptions" value="{{ option }}"> {{ option.kategorieName}} </option>
-                </select>
-             </div>
-              <div class="modal-footer">
-                 <button type="button" id="" data-bs-dismiss="modal" class="btn btn-secondary">Schließen</button>
-                 <button type="reset" id="" class="btn btn-danger">Zurücksetzen</button>
-                 <button [disabled]="updateForm.invalid" (click)="onUpdateAusgabe(updateForm.value)" data-bs-dismiss="modal" class="btn btn-primary">Speichern</button>
-              </div>
-           </form>
+          <div class="form-group">
+            <label>Beschreibung</label>
+            <input formControlName="beschreibung" type="text" class="form-control" required>
+          </div>
+          <input formControlName="id" type="hidden">
+          <div class="form-group">
+            <label>Wert</label>
+            <input formControlName="wert" type="number" step="any" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Datum</label>
+            <input formControlName="datum" type="date" class="form-control" required>
+          </div>
+          <div class="form-group">
+            <label>Kategorie</label>
+            <select formControlName="kategorie" class="form-select" required>
+              <option *ngFor="let option of kategorieOptions" [value]="option.id"> {{ option.kategorieName}} </option>
+            </select>
+          </div>
         </div>
-     </div>
+        <div class="modal-footer">
+          <button type="button" id="" data-bs-dismiss="modal" class="btn btn-secondary">Schließen</button>
+          <button type="reset" id="" class="btn btn-danger">Zurücksetzen</button>
+          <button type="submit" data-bs-dismiss="modal" class="btn btn-primary">Speichern</button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -176,11 +174,11 @@
         </div>
         <div class="modal-body">
            <p>Are you sure you want to delete this Ausgabe "{{ ausgabeInModal?.beschreibung }}"?</p>
-           <div class="modal-footer">
-              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nein</button>
-              <button (click)="onDeleteAusgabe(ausgabeInModal.id)" class="btn btn-danger" data-bs-dismiss="modal">Ja</button>
-           </div>
         </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nein</button>
+          <button (click)="onDeleteAusgabe(ausgabeInModal.id)" class="btn btn-danger" data-bs-dismiss="modal">Ja</button>
+       </div>
      </div>
   </div>
 </div>
