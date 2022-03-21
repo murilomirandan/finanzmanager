@@ -18,7 +18,10 @@ export class AusgabeComponent implements OnInit {
   currentClass = 'ausgaben';
   addAusgabeForm: FormGroup;
   updateAusgabeForm: FormGroup;
+  deleteAusgabeForm: FormGroup;
+  beschreibungText: string;
 
+  ausgabeKategorie: any;
   kategorieOptions:  AusgabeKategorie[] = [
     new AusgabeKategorie(1, "Miete"),
     new AusgabeKategorie(2, "Lebensmittel"),
@@ -62,12 +65,16 @@ export class AusgabeComponent implements OnInit {
     });
 
     this.updateAusgabeForm = this.formBuilder.group({
-      id:new FormControl('', []),
+      id: new FormControl('', []),
       beschreibung: new FormControl('', [
         Validators.required, Validators.minLength(2), Shared.notOnlyWhitespace]),
       wert: new FormControl('', [Validators.required]),
       datum: new FormControl('', [Validators.required]),
       kategorie: new FormControl('', [Validators.required])
+    });
+
+    this.deleteAusgabeForm = this.formBuilder.group({
+      id: new FormControl('', [])
     });
   }
 
@@ -152,7 +159,6 @@ export class AusgabeComponent implements OnInit {
       button.setAttribute('data-bs-target', '#addAusgabeModal');
     }
     if (mode === 'update') {
-      this.ausgabeInModal = ausgabe;
       this.updateAusgabeForm.setValue({
         id: ausgabe.id,
         beschreibung: ausgabe.beschreibung,
@@ -161,12 +167,18 @@ export class AusgabeComponent implements OnInit {
         kategorie: ausgabe.kategorie.id
       });
 
-      // console.log(this.updateAusgabeForm);
-      // console.log("Ausgabe in update Modal", JSON.stringify(this.ausgabeInModal));
+      console.log("Update Modal: ", this.updateAusgabeForm);
       button.setAttribute('data-bs-target', '#updateAusgabeModal');
     }
     if (mode === 'delete') {
-      this.ausgabeInModal = ausgabe;
+      // console.log(JSON.stringify(ausgabe));
+
+      this.deleteAusgabeForm.setValue({
+        id: ausgabe.id
+      })
+      this.beschreibungText = ausgabe.beschreibung;
+
+      // console.log("Delete Modal", this.deleteAusgabeForm);
       button.setAttribute('data-bs-target', '#deleteAusgabeModal');
     }
 
@@ -184,9 +196,9 @@ export class AusgabeComponent implements OnInit {
     ausgabe.beschreibung = this.addAusgabeForm.controls['beschreibung'].value;
     ausgabe.wert = this.addAusgabeForm.controls['wert'].value;
     ausgabe.datum = this.addAusgabeForm.controls['datum'].value;
-    let kategorieId = this.addAusgabeForm.controls['kategorie'].value;
+    let kategorieId = Number(this.addAusgabeForm.controls['kategorie'].value);
 
-    let ausgabeKategorie = {...this.kategorieOptions.filter(option => option.id === kategorieId)}[0];
+    let ausgabeKategorie = this.kategorieOptions.filter(option => option.id === kategorieId)[0];
     ausgabe.kategorie = ausgabeKategorie;
     // console.log(`Ausgabe im Add form: ${JSON.stringify(ausgabeKategorie)}`);
     // console.log(`Ausgabe im Add form: ${JSON.stringify(ausgabe)}`);
@@ -214,11 +226,15 @@ export class AusgabeComponent implements OnInit {
     ausgabe.beschreibung = this.updateAusgabeForm.controls['beschreibung'].value;
     ausgabe.wert = this.updateAusgabeForm.controls['wert'].value;
     ausgabe.datum = this.updateAusgabeForm.controls['datum'].value;
-    let kategorieId = this.updateAusgabeForm.controls['kategorie'].value;
+    let kategorieId = Number(this.updateAusgabeForm.controls['kategorie'].value);
 
-    let ausgabeKategorie = {...this.kategorieOptions.filter(option => option.id === kategorieId)}[0];
-    ausgabe.kategorie = ausgabeKategorie;
+    this.ausgabeKategorie = this.kategorieOptions.filter(option => option.id === kategorieId)[0];
+    ausgabe.kategorie = this.ausgabeKategorie;
+    // console.log("KategorieId: ", kategorieId);
+    // console.log("Kategorie: ", this.ausgabeKategorie);
+    // console.log(JSON.stringify(ausgabe));
 
+    // return;
     this.ausgabeService.updateAusgabe(ausgabe).subscribe({
       next: (response: Ausgabe) => {
         console.log(response);
@@ -231,7 +247,10 @@ export class AusgabeComponent implements OnInit {
     });
   }
 
-  public onDeleteAusgabe(ausgabeId: number): void {
+  public onDeleteAusgabe(): void {
+    let ausgabeId = this.deleteAusgabeForm.controls['id'].value;
+    console.log("Ausgabe Id: ", ausgabeId);
+
     this.ausgabeService.deleteAusgabe(ausgabeId).subscribe({
       next: (response: void) => {
         console.log(response);

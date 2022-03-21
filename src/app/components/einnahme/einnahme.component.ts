@@ -4,6 +4,7 @@ import { FormBuilder, FormControl, FormGroup, NgForm, ValidationErrors, Validato
 import { ActivatedRoute } from '@angular/router';
 import { Einnahme } from 'src/app/common/einnahme';
 import { EinnahmeService } from 'src/app/services/einnahme.service';
+import { Shared } from '../shared/shared';
 
 @Component({
   selector: 'app-einnahme',
@@ -15,6 +16,8 @@ export class EinnahmeComponent implements OnInit {
   currentClass = 'einnahmen';
   addEinnahmeForm: FormGroup;
   updateEinnahmeForm: FormGroup;
+  deleteEinnahmeForm: FormGroup;
+  beschreibungText: string;
 
   einnahmen: Einnahme[];
   einnahmeInModal: Einnahme;
@@ -40,17 +43,21 @@ export class EinnahmeComponent implements OnInit {
 
     this.addEinnahmeForm = this.formBuilder.group({
       beschreibung: new FormControl('', [
-        Validators.required, Validators.minLength(2), this.notOnlyWhitespace]),
+        Validators.required, Validators.minLength(2), Shared.notOnlyWhitespace]),
       wert: new FormControl('', [Validators.required]),
       datum: new FormControl('', [Validators.required]),
     });
 
     this.updateEinnahmeForm = this.formBuilder.group({
-      id: new FormControl('', [Validators.required]),
+      id: new FormControl('', []),
       beschreibung: new FormControl('', [
-        Validators.required, Validators.minLength(2), this.notOnlyWhitespace]),
+        Validators.required, Validators.minLength(2), Shared.notOnlyWhitespace]),
       wert: new FormControl('', [Validators.required]),
       datum: new FormControl('', [Validators.required]),
+    });
+
+    this.deleteEinnahmeForm = this.formBuilder.group({
+      id: new FormControl('', [])
     });
   }
 
@@ -142,10 +149,15 @@ export class EinnahmeComponent implements OnInit {
         wert: einnahme.wert,
         datum: new Date(einnahme.datum).toISOString().substring(0, 10)
       });
+
       button.setAttribute('data-bs-target', '#updateEinnahmeModal');
     }
     if (mode === 'delete') {
-      this.einnahmeInModal = einnahme;
+      this.deleteEinnahmeForm.setValue({
+        id: einnahme.id
+      })
+      this.beschreibungText = einnahme.beschreibung;
+
       button.setAttribute('data-bs-target', '#deleteEinnahmeModal');
     }
 
@@ -201,7 +213,10 @@ export class EinnahmeComponent implements OnInit {
     });
   }
 
-  public onDeleteEinnahme(einnahmeId: number): void {
+  public onDeleteEinnahme(): void {
+    let einnahmeId = this.deleteEinnahmeForm.controls['id'].value;
+    console.log("Einnahme Id: ", einnahmeId);
+
     this.einnahmeService.deleteEinnahme(einnahmeId).subscribe({
       next: (response: void) => {
         console.log(response);
@@ -211,18 +226,6 @@ export class EinnahmeComponent implements OnInit {
         alert(error.message);
       }
     });
-  }
-
-  notOnlyWhitespace(control: FormControl): ValidationErrors {
-    // check id string only contains whitespace
-    if((control.value != null) && (control.value.trim().length === 0)){
-      //invalid, return error object
-      return {'notOnlyWhitespace': true};
-    }
-    else{
-      // valid, return null
-      return null;
-    }
   }
 
   get addBeschreibung(){ return this.addEinnahmeForm.get('beschreibung'); }

@@ -119,7 +119,7 @@
         <div class="modal-footer">
            <button type="button" id="add-einnahme-form" class="btn btn-secondary" data-bs-dismiss="modal">Schließen</button>
            <button type="reset" id="" class="btn btn-danger">Zurücksetzen</button>
-           <button type="submit" [disabled]="addEinnahmeForm.invalid" class="btn btn-primary">Speichern</button>
+           <button type="submit" class="btn btn-primary">Speichern</button>
         </div>
       </div>
     </form>
@@ -169,13 +169,16 @@
         <h2 class="modal-title" id="deleteModelLabel">Löschen</h2>
           <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-        <div class="modal-body">
-          <p>Are you sure you want to delete this Einnahme "{{ einnahmeInModal?.beschreibung }}"?</p>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nein</button>
-          <button (click)="onDeleteEinnahme(einnahmeInModal.id)" class="btn btn-danger" data-bs-dismiss="modal">Ja</button>
-      </div>
+        <form [formGroup]="deleteEinnahmeForm" (ngSubmit)="onDeleteEinnahme()">
+          <div class="modal-body">
+            <input type="hidden" formControlName="id">
+            <p>Are you sure you want to delete this Einnahme "{{ beschreibungText }}"?</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Nein</button>
+            <button class="btn btn-danger" data-bs-dismiss="modal">Ja</button>
+          </div>
+        </form>
     </div>
   </div>
 </div>
