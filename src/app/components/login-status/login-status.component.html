@@ -1,0 +1,24 @@
+<div class="row justify-content-end">
+  <div class="col-4">
+    <button *ngIf="!isAuthenticated" routerLink="/login" class="btn btn-outline-primary">
+      Login
+    </button>
+  </div>
+
+  <div *ngIf="isAuthenticated">
+    <div class="row">
+      <div *ngIf="firstName" class="col-6 pt-2 text-end">
+        Welcome back {{ firstName }}
+      </div>
+
+      <button  routerLink="/home" type="button" class="btn btn-outline-primary me-2 col-2">
+        Home
+      </button>
+
+      <button (click)="logout()" type="button" class="btn btn-primary col-2">
+        Logout
+      </button>
+    </div>
+  </div>
+
+</div>
