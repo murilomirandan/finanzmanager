@@ -35,22 +35,32 @@
 
 
       <div class="col-5">
-        <div class="table-responsive">
-          <table class="table table-striped">
-            <thead>
-              <tr>
-                <th>Kategorie</th>
-                <th class="text-end">Wert</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr *ngFor="let kategorie of tableKategorie">
-                <td>{{ kategorie.kategorieName }}</td>
-                <td class="text-end">{{ kategorie.wert | currency: "EUR"}}</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+        <mat-tab-group mat-align-tabs="center" dynamicHeight>
+          <mat-tab label="Table">
+            <div class="table-responsive">
+              <table class="table table-striped">
+                <thead>
+                  <tr>
+                    <th>Kategorie</th>
+                    <th class="text-end">Wert</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr *ngFor="let kategorie of tableKategorie">
+                    <td>{{ kategorie.kategorieName }}</td>
+                    <td class="text-end">{{ kategorie.wert | currency: "EUR"}}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </mat-tab>
+          <mat-tab label="Graphic">
+            <ng-template matTabContent>
+              <app-scatterplot [ausgabeInput]="tableKategorie"></app-scatterplot>
+              <!--  -->
+            </ng-template>
+          </mat-tab>
+        </mat-tab-group>
       </div>
     </div>
   </div>

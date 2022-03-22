@@ -1,14 +1,20 @@
 import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { BrowserModule } from '@angular/platform-browser';
-import { HttpClientModule } from '@angular/common/http';
-import { FormsModule } from '@angular/forms';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import { ReactiveFormsModule } from '@angular/forms';
+
+import { HttpClientModule } from '@angular/common/http';
+import { MatNativeDateModule } from '@angular/material/core';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { MatTabsModule } from '@angular/material/tabs';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatNativeDateModule } from '@angular/material/core';
 import { RouterModule, Routes } from '@angular/router';
 import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+import * as PlotlyJS from 'plotly.js-dist-min';
+import { PlotlyModule } from 'angular-plotly.js';
+PlotlyModule.plotlyjs = PlotlyJS;
 
 import { AppComponent } from './app.component';
 import { HomeComponent } from './components/home/home.component';
@@ -20,6 +26,7 @@ import { DatepickerComponent } from './components/datepicker/datepicker.componen
 import { AusgabeService } from './services/ausgabe.service';
 import { KostenrechnungComponent } from './components/kostenrechnung/kostenrechnung.component';
 import { KostenrechnungService } from './services/kostenrechnung.service';
+import { ScatterplotComponent } from './graphics/scatterplot/scatterplot.component';
 
 const routes: Routes = [
   {path: 'home', component: HomeComponent},
@@ -47,6 +54,7 @@ const routes: Routes = [
     EinnahmeComponent,
     AusgabeComponent,
     KostenrechnungComponent,
+    ScatterplotComponent,
   ],
   imports: [
     RouterModule.forRoot(routes),
@@ -59,6 +67,9 @@ const routes: Routes = [
     MatFormFieldModule,
     MatNativeDateModule,
     NgbModule,
+    CommonModule,
+    PlotlyModule,
+    MatTabsModule
   ],
   providers: [EinnahmeService, AusgabeService, KostenrechnungService],
   bootstrap: [AppComponent]

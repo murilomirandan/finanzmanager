@@ -6,8 +6,10 @@ export const environment = {
   production: false,
 
   apiBaseUrl: 'http://localhost:8082'
-};
+  // SET NODE_OPTIONS=--max_old_space_size=8048
 
+};
+// node --max_old_space_size=8048 ./node_modules/@angular/cli/bin/ng serve
 /*
  * For easier debugging in development mode, you can import the following file
  * to ignore zone related error stack frames such as `zone.run`, `zoneDelegate.invokeTask`.
